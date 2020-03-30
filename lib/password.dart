@@ -12,27 +12,27 @@ class App extends StatelessWidget{
       theme: new ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: new LoginPage(),
+      home: new PasswordPage(),
     );
   }
 }
 /// 登入Widget
-class LoginPage extends StatefulWidget{
+class PasswordPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return new LoginPageState();
+    return new PasswordPageState();
   }
 }
 /// 登入布局
-class LoginPageState extends State<LoginPage>{
+class PasswordPageState extends State<PasswordPage>{
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
 //        leading: new IconButton(icon: new Icon(Icons.menu),tooltip: 'Navigation menu', onPressed: null),
-        title: new Text('LOGIN'),
+        title: new Text('PASSWORD'),
         actions: <Widget>[
 //          new IconButton(icon: new Icon(Icons.search),tooltip: 'Search', onPressed: null)
         ],
@@ -42,11 +42,6 @@ class LoginPageState extends State<LoginPage>{
           margin: const EdgeInsets.only(top: 100,left: 30,right: 30),
           child: Column(
             children: <Widget>[
-              CircleAvatar(
-                radius: 72.0,
-                backgroundColor: Colors.transparent,
-                backgroundImage: AssetImage('images/bunder.jpeg'),
-              ),
               new TextFormField(
                 decoration: const InputDecoration(
                   icon: const Icon(Icons.account_circle),
@@ -96,7 +91,7 @@ class LoginPageState extends State<LoginPage>{
                 },
               ),
               new Container(
-                margin: const EdgeInsets.only(left: 30,right: 20),
+                margin: const EdgeInsets.only(left: 30,right: 20,top: 50),
                 child: Column(
                   children: <Widget>[
                     new Row(
@@ -108,7 +103,7 @@ class LoginPageState extends State<LoginPage>{
                             if (_formKey.currentState.validate()) {
                             }
                           },
-                          child: Text('登   入'),
+                          child: Text('确   认'),
                         ),
                       ],
                     ),
@@ -124,22 +119,8 @@ class LoginPageState extends State<LoginPage>{
                                 // Process data.
                               }
                             },
-                            child: Text('注   册'),
+                            child: Text('取   消'),
                           ),]),
-                    new Row(children: <Widget>[
-                      new RaisedButton(
-                        color: Colors.brown,
-                        padding: EdgeInsets.only(left: 130,right: 130),
-                        onPressed: () {
-                          // Validate will return true if the form is valid, or false if
-                          // the form is invalid.
-                          if (_formKey.currentState.validate()) {
-                            // Process data.
-                          }
-                        },
-                        child: Text('注   销'),
-                      ),
-                    ],)
                   ],
                 ),
               ),
