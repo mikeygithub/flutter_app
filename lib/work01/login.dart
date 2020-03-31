@@ -10,7 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 void main() => runApp(App());
 
 class App extends StatelessWidget {
-
   final routes = <String, WidgetBuilder>{
     InfoPage.tag: (context) => InfoPage(),
     RegisterPage.tag: (context) => RegisterPage(),
@@ -19,7 +18,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Bmob.init("https://api2.bmob.cn", "486892a74f6ce4c1dffc5ecf9a7700d7", "0ab358c02de6b3b72baa88ce3faa80a0");
+    Bmob.init("https://api2.bmob.cn", "486892a74f6ce4c1dffc5ecf9a7700d7",
+        "0ab358c02de6b3b72baa88ce3faa80a0");
     // TODO: implement build
     return new MaterialApp(
       title: 'LOGIN_PAGE',
@@ -34,7 +34,6 @@ class App extends StatelessWidget {
 
 /// 登入Widget
 class LoginPage extends StatefulWidget {
-
   static String tag = 'login-page';
 
   @override
@@ -75,7 +74,25 @@ class LoginPageState extends State<LoginPage> {
     bmobUserRegister.password = _password;
     bmobUserRegister.login().then((BmobUser bmobUser) {
 //      showSuccess(context, bmobUser.getObjectId() + "\n" + bmobUser.username);
+      Fluttertoast.showToast(
+          msg: "登入成功",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+          fontSize: 16.0);
+
+      Navigator.of(context).pushNamed(InfoPage.tag);
     }).catchError((e) {
+      Fluttertoast.showToast(
+          msg: "登入失败,请检查用户名密码",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
 //      showError(context, BmobError.convert(e).error);
     });
   }
@@ -95,7 +112,7 @@ class LoginPageState extends State<LoginPage> {
               new Row(
                 children: <Widget>[
                   new Container(
-                    margin: EdgeInsets.only(left: 140,right: 100),
+                    margin: EdgeInsets.only(left: 140, right: 100),
                     child: CircleAvatar(
                       radius: 40.0,
                       backgroundColor: Colors.transparent,
@@ -145,7 +162,7 @@ class LoginPageState extends State<LoginPage> {
                     margin: EdgeInsets.only(left: 190),
                     child: new GestureDetector(
                       child: new Text('忘记密码'),
-                      onTap: (){
+                      onTap: () {
                         Navigator.of(context).pushNamed(PasswordPage.tag);
                       },
                     ),
@@ -163,54 +180,47 @@ class LoginPageState extends State<LoginPage> {
                           padding: EdgeInsets.only(left: 130, right: 130),
                           onPressed: () {
 //                            if (_formKey.currentState.validate()) {
-//                              Navigator.of(context).pushNamed(InfoPage.tag);
-                            Fluttertoast.showToast(
-                                msg: "This is Center Short Toast",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0
-                            );
+                          _login(context);
 //                            }
                           },
                           child: Text('登   入'),
                         ),
                       ],
                     ),
-                    new Row(
-                        children: <Widget>[
-                          RaisedButton(
-                            color: Colors.red,
-                            padding: EdgeInsets.only(left: 130,right: 130),
-                            onPressed: () {
-                                Navigator.of(context).pushNamed(RegisterPage.tag);
-                            },
-                            child: Text('注   册'),
-                          ),]),
                     new Row(children: <Widget>[
-                      new RaisedButton(
-                        color: Colors.brown,
-                        padding: EdgeInsets.only(left: 130,right: 130),
+                      RaisedButton(
+                        color: Colors.red,
+                        padding: EdgeInsets.only(left: 130, right: 130),
                         onPressed: () {
-                          // Validate will return true if the form is valid, or false if
-                          // the form is invalid.
-                          if (_formKey.currentState.validate()) {
-                            // Process data.
-                            Navigator.of(context).pushNamed(RegisterPage.tag);
-                          }
+                          Navigator.of(context).pushNamed(RegisterPage.tag);
                         },
-                        child: Text('注   销'),
+                        child: Text('注   册'),
                       ),
-                    ],
+                    ]),
+                    new Row(
+                      children: <Widget>[
+                        new RaisedButton(
+                          color: Colors.brown,
+                          padding: EdgeInsets.only(left: 130, right: 130),
+                          onPressed: () {
+                            // Validate will return true if the form is valid, or false if
+                            // the form is invalid.
+                            if (_formKey.currentState.validate()) {
+                              // Process data.
+                              Navigator.of(context).pushNamed(RegisterPage.tag);
+                            }
+                          },
+                          child: Text('注   销'),
+                        ),
+                      ],
                     )
                   ],
                 ),
               ),
               new Container(
-                margin: EdgeInsets.only(bottom: 3,left: 100,top: 150),
-                child: Text('Power by MIKEY use flutter'),),
+                margin: EdgeInsets.only(bottom: 3, left: 100, top: 150),
+                child: Text('Power by MIKEY use flutter'),
+              ),
             ],
           ),
         ),
