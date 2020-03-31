@@ -1,32 +1,64 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(App());
-
-class App extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return new MaterialApp(
-      title: 'LOGIN_PAGE',
-      theme: new ThemeData(
-        primaryColor: Colors.blue,
-      ),
-      home: new PasswordPage(),
-    );
-  }
+enum Action {
+  Ok,
+  Cancel
 }
-/// 登入Widget
 class PasswordPage extends StatefulWidget{
+
+  static String tag = 'passwrod-page';
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return new PasswordPageState();
   }
 }
-/// 登入布局
 class PasswordPageState extends State<PasswordPage>{
   final _formKey = GlobalKey<FormState>();
+  String _choice = 'Nothing';
+
+  Future _openAlertDialog() async {
+    final action = await showDialog(
+      context: context,
+      barrierDismissible: false,//// user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('提示'),
+          content: Text('是否删除?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('取消'),
+              onPressed: () {
+                Navigator.pop(context, Action.Cancel);
+              },
+            ),
+            FlatButton(
+              child: Text('确认'),
+              onPressed: () {
+                Navigator.pop(context, Action.Ok);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    switch (action) {
+      case Action.Ok:
+        setState(() {
+          _choice = 'Ok';
+        });
+        break;
+      case Action.Cancel:
+        setState(() {
+          _choice = 'Cancel';
+        });
+        break;
+      default:
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -40,7 +72,7 @@ class PasswordPageState extends State<PasswordPage>{
       body: new Center(
         child: new Container(
           margin: const EdgeInsets.only(top: 100,left: 30,right: 30),
-          child: Column(
+          child: ListView(
             children: <Widget>[
               new TextFormField(
                 decoration: const InputDecoration(

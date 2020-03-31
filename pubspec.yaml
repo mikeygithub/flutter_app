@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   data_plugin: ^0.0.16
+  fluttertoast: ^4.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -49,6 +50,7 @@ flutter:
     - images/logo.png
     - images/dog.jpeg
     - images/bunder.jpeg
+    - images/mikey_image.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
