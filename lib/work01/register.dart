@@ -23,6 +23,8 @@ class RegisterPageState extends State<RegisterPage> {
 
   String _confirmPassword = '';
 
+  String _email = '';
+
   bool verifyPassword() {
     if (this._password == ''||this._confirmPassword==''||this._username=='') {
       Fluttertoast.showToast(
@@ -55,6 +57,7 @@ class RegisterPageState extends State<RegisterPage> {
     if (verifyPassword()) {
       bmobUserRegister.username = _username;
       bmobUserRegister.password = _password;
+      bmobUserRegister.email = _email;
       bmobUserRegister.register().then((BmobRegistered data) {
         Fluttertoast.showToast(
             msg: "注册成功,返回登入",
@@ -73,12 +76,25 @@ class RegisterPageState extends State<RegisterPage> {
 
   ///查询一条数据
   _querySingle(BuildContext context) {
+
+    BmobQuery<BmobUser> query1 = BmobQuery();
+    query1.addWhereEqualTo("username", this._username);
+
+    BmobQuery<BmobUser> query2 = BmobQuery();
+    query2.addWhereEqualTo("email", this._email);
+
     BmobQuery<BmobUser> bmobQuery = BmobQuery();
-    bmobQuery.addWhereEqualTo("username", this._username);
+
+    List<BmobQuery<BmobUser>> list = new List();
+    list.add(query1);
+    list.add(query2);
+
+    bmobQuery.or(list);
+
     bmobQuery.queryUsers().then((data) {
       if (data.length > 0) {
         Fluttertoast.showToast(
-            msg: "用户名已存在",
+            msg: "用户名或邮箱已存在",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
@@ -117,6 +133,16 @@ class RegisterPageState extends State<RegisterPage> {
                 },
                 onChanged: (String value) {
                   this._username = value;
+                  _querySingle(context);
+                },
+              ),
+              new TextFormField(
+                decoration: const InputDecoration(
+                  icon: const Icon(Icons.email),
+                  hintText: '请输入邮箱',
+                ),
+                onChanged: (String value) {
+                  this._email = value;
                   _querySingle(context);
                 },
               ),

@@ -20,12 +20,17 @@ class InfoPageState extends State<InfoPage> {
 
   @override
   void initState() {
+    super.initState();
     getUserName();
   }
 
   getUserName() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    this.username = prefs.getString(LoginPage.info);
+    final username = prefs.getString(LoginPage.info);
+
+    setState(() {
+      this.username = username;
+    });
   }
 
   @override
@@ -45,7 +50,7 @@ class InfoPageState extends State<InfoPage> {
                 margin: EdgeInsets.only(top: 50),
                 height: 60,
                 child:
-                new Text('USER_NAME:$username') ,
+                new Text('USER_NAME:'+this.username) ,
               ),
               new Row(
                 children: <Widget>[
