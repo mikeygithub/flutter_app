@@ -1,10 +1,11 @@
+import 'package:data_plugin/bmob/bmob_query.dart';
+import 'package:data_plugin/bmob/response/bmob_updated.dart';
+import 'package:data_plugin/bmob/table/bmob_user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/work01/register.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-enum Action {
-  Ok,
-  Cancel
-}
 class PasswordPage extends StatefulWidget{
 
   static String tag = 'passwrod-page';
@@ -16,57 +17,18 @@ class PasswordPage extends StatefulWidget{
   }
 }
 class PasswordPageState extends State<PasswordPage>{
-  final _formKey = GlobalKey<FormState>();
-  String _choice = 'Nothing';
 
-  Future _openAlertDialog() async {
-    final action = await showDialog(
-      context: context,
-      barrierDismissible: false,//// user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('提示'),
-          content: Text('是否删除?'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('取消'),
-              onPressed: () {
-                Navigator.pop(context, Action.Cancel);
-              },
-            ),
-            FlatButton(
-              child: Text('确认'),
-              onPressed: () {
-                Navigator.pop(context, Action.Ok);
-              },
-            ),
-          ],
-        );
-      },
-    );
+  String _username = '';
+  String _oldPassword = '';
+  String _newPassword = '';
+  String _comfirmPassword = '';
 
-    switch (action) {
-      case Action.Ok:
-        setState(() {
-          _choice = 'Ok';
-        });
-        break;
-      case Action.Cancel:
-        setState(() {
-          _choice = 'Cancel';
-        });
-        break;
-      default:
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-//        leading: new IconButton(icon: new Icon(Icons.menu),tooltip: 'Navigation menu', onPressed: null),
         title: new Text('PASSWORD'),
         actions: <Widget>[
-//          new IconButton(icon: new Icon(Icons.search),tooltip: 'Search', onPressed: null)
         ],
       ),
       body: new Center(
@@ -79,47 +41,38 @@ class PasswordPageState extends State<PasswordPage>{
                   icon: const Icon(Icons.account_circle),
                   hintText: '请输入用户名',
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return '用户名不能为空';
-                  }
-                  return null;
+                onChanged: (String value){
+                  this._username = value;
                 },
               ),
               TextFormField(
+                obscureText: true,
                 decoration: const InputDecoration(
                   icon: const Icon(Icons.vpn_key),
                   hintText: '请输入旧密码',
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return '旧密码不能为空';
-                  }
-                  return null;
+                onChanged: (String value){
+                  this._oldPassword = value;
                 },
               ),
               TextFormField(
+                obscureText: true,
                 decoration: const InputDecoration(
                   icon: const Icon(Icons.vpn_key),
                   hintText: '请输入密码',
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return '密码不能为空';
-                  }
-                  return null;
+                onChanged: (String value){
+                  this._newPassword = value;
                 },
               ),
               TextFormField(
+                obscureText: true,
                 decoration: const InputDecoration(
                   icon: const Icon(Icons.vpn_key),
                   hintText: '请输入确认密码',
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return '确认密码不能为空';
-                  }
-                  return null;
+                onChanged: (String value){
+                  this._comfirmPassword = value;
                 },
               ),
               new Container(
@@ -132,8 +85,7 @@ class PasswordPageState extends State<PasswordPage>{
                           color: Colors.blue,
                           padding: EdgeInsets.only(left: 130,right: 130),
                           onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                            }
+                            submitFormData();
                           },
                           child: Text('确   认'),
                         ),
@@ -145,11 +97,7 @@ class PasswordPageState extends State<PasswordPage>{
                             color: Colors.red,
                             padding: EdgeInsets.only(left: 130,right: 130),
                             onPressed: () {
-                              // Validate will return true if the form is valid, or false if
-                              // the form is invalid.
-                              if (_formKey.currentState.validate()) {
-                                // Process data.
-                              }
+                              Navigator.of(context).pushNamed('/');
                             },
                             child: Text('取   消'),
                           ),]),
@@ -161,5 +109,72 @@ class PasswordPageState extends State<PasswordPage>{
         ),
       ),
     );
+  }
+
+  //提交数据
+  void submitFormData() {
+    if(verifyFormData()){
+      //检查用户是否存在
+      BmobQuery<BmobUser> bmobQuery = BmobQuery();
+      bmobQuery.addWhereEqualTo("username", this._username);
+      bmobQuery.addWhereEqualTo("password", this._oldPassword);
+      bmobQuery.queryUsers().then((data) {
+        if (data.length < 1) {
+          Fluttertoast.showToast(
+              msg: "用户名或密码错误",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }else{///更新密码
+          List<BmobUser> users = data.map((i) => BmobUser.fromJson(i)).toList();
+          BmobUser user = users[0];
+          user.password = this._newPassword;
+          user.update().then((BmobUpdated bmobUpdated){
+//            Fluttertoast.showToast(
+//                msg: "修改成功",
+//                toastLength: Toast.LENGTH_SHORT,
+//                gravity: ToastGravity.CENTER,
+//                timeInSecForIosWeb: 1,
+//                backgroundColor: Colors.blue,
+//                textColor: Colors.white,
+//                fontSize: 16.0);
+          });
+//          Navigator.of(context).pushNamed('/');
+        }
+      }).catchError((e) {
+        print(e);
+      });
+    }
+  }
+  //验证信息
+  bool verifyFormData() {
+    //非空
+    if(_username == ''||_oldPassword==''||_newPassword==''||_comfirmPassword=='') {
+      Fluttertoast.showToast(
+          msg: "请完整填写信息",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+    //密码一致检测
+    if(_newPassword!=_comfirmPassword){
+      Fluttertoast.showToast(
+          msg: "两次输入密码不一致",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+    return true;
   }
 }
